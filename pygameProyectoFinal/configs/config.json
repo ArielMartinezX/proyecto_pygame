@@ -1,0 +1,40 @@
+{
+    "stage_1": {
+        "stage" : {
+            "stage_background": "assets/graphics/cemetery.jpg",
+            "max_enemies_amount": 1,
+            "coords_enemies": [
+                {
+                    "coord_x": 50,
+                    "coord_y": 150
+                },
+                {
+                    "coord_x": 200,
+                    "coord_y": 80
+                },
+                {
+                    "coord_x": 400,
+                    "coord_y": 20
+                }
+            ]
+        },
+        "player": {
+            "player_img": "image",
+            "jump_power": 60,
+            "jump_limit": 20,
+            "gravity": 5,
+            "walk_speed": 5,
+            "run_speed": 7,
+            "aspect_ratio" : 2,
+            "lives": 3
+        },
+        "enemy":{
+            "enemy_img": "assets/graphics/Jump(32x32).png",
+            "aspect_ratio" : 2,
+            "enemy_max_speed": 5,
+            "enemy_min_speed": 1,
+            "shoot_percentage": 50,
+            "gravity": 20
+        }
+    }
+}
