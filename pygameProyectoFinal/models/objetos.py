@@ -3,7 +3,7 @@ from auxiliar.utils import SurfaceManager as sf
 from auxiliar.constantes import DEBUG
 
 class Objetos(pygame.sprite.Sprite):
-    def __init__(self, x,y, aspect_ratio, frame_rate):
+    def __init__(self, x,y, aspect_ratio, frame_rate, puntaje):
         super().__init__()
 
         self.__image = sf.get_surface_from_spritesheet(r"assets\graphics\Apple.png", 17,1)
@@ -17,10 +17,13 @@ class Objetos(pygame.sprite.Sprite):
         self.__actual_img_animation = self.__actual_animation[self.__initial_frame]
         self.__rect = self.__actual_img_animation.get_rect(midbottom=(x,y))
         self.__ground_collition_rect = pygame.Rect(self.__rect.x+17, self.__rect.y+20, self.__rect.w//2 -3, self.__rect.h-43)
-        
+        self.__puntaje = puntaje
     @property
     def rect(self):
         return self.__ground_collition_rect   
+    @property
+    def score(self):
+        return self.__puntaje
     
     def do_animation(self, delta_ms):
         self.__player_animation_time += delta_ms   

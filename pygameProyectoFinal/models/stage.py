@@ -4,6 +4,7 @@ from models.player_1 import Player
 from models.enemy import Enemy
 from models.objetos import Objetos
 from models.plataformas import Platform
+from models.trampas import Trampas
 
 class Stage:
     def __init__(self, screen: pygame.surface.Surface, limit_h, limit_w, stage_name:str):
@@ -23,11 +24,15 @@ class Stage:
         self.__stage_configs = self.__configs.get('stage')
         #configuraciones de enemigos
         self.__enemy_configs = self.__configs.get('enemy')
+        #configuraciones de frutas
+        self.__object_configs = self.__configs.get('objetos')
         
         #creo grupo jugador y enemigos
         self.player = pygame.sprite.GroupSingle(self.__player_sprite)
         self.enemies = pygame.sprite.Group()
-        self.objects = pygame.sprite.Group()
+        self.objets = pygame.sprite.Group()
+        self.spikes = pygame.sprite.Group()
+        
         self.create_enemies()
         #del json obtengo configuraciones del stage
         self.__stage_configs = self.__configs.get('stage')
@@ -53,8 +58,8 @@ class Stage:
         self.crear_plataformas()
         
         #objetos
-        self.create_objetcs()
-    
+        self.create_objets()
+        self.create_spikes()
     @property
     def stage_image(self):
         return self.__stage_image
@@ -65,24 +70,33 @@ class Stage:
     def crear_plataformas(self):
         self.__lista_plataformas.append(Platform(0,500,SCR_WIDTH,40))
         # self.__lista_plataformas.append(Platform(400,200,40,40))
-        self.__lista_plataformas.append(Platform(280,400,40,40))
+        self.__lista_plataformas.append(Platform(280,400,240,40))
         self.__lista_plataformas.append(Platform(180,300,200,40))
-        self.__lista_plataformas.append(Platform(380,400,40,40))
-        self.__lista_plataformas.append(Platform(380,200,200,40))
+        self.__lista_plataformas.append(Platform(380,400,400,40))
+        self.__lista_plataformas.append(Platform(380,200,300,40))
         
     def plataformas(self):
         for platform in self.__lista_plataformas:
             platform.draw(self.__main_screen)
+            
     def enemigos(self):
         for enemy in self.enemies:
             enemy.draw(self.__main_screen)
     
-    def create_objetcs(self):
-        # self.objects.add(Objetos(400+20,200, 2, 100))
-        self.objects.add(Objetos(280+20,400, 2, 100))
-        self.objects.add(Objetos(180+20,400, 2, 100))
-        self.objects.add(Objetos(380+20,400, 2, 100))
-        # print(f"len de objetos {len(self.objects)}")
+    def create_spikes(self):
+        self.spikes.add(Trampas(360,300))
+        # self.spikes.add(Trampas(420,300))
+        self.spikes.add(Trampas(300,300))
+    
+    def create_objets(self):
+        # self.objets.add(Objetos(400+20,200, 2, 100))
+        self.objets.add(Objetos(150+20, 400, 2, 100, self.__object_configs.get('puntaje')))
+        self.objets.add(Objetos(280+20,400, 2, 100, self.__object_configs.get('puntaje')))
+        self.objets.add(Objetos(180+20,400, 2, 100, self.__object_configs.get('puntaje')))
+        self.objets.add(Objetos(380+20,400, 2, 100, self.__object_configs.get('puntaje')))
+        self.objets.add(Objetos(500+20,400, 2, 100, self.__object_configs.get('puntaje')))
+        self.objets.add(Objetos(420+20,400, 2, 100, self.__object_configs.get('puntaje')))
+        # print(f"len de objetos {len(self.objets)}")
     
     def create_enemies(self):
         for _ in range(self.__stage_configs.get('max_enemies_amount')):
@@ -93,17 +107,23 @@ class Stage:
                             self.__enemy_configs.get('gravity'),
                             self.__enemy_configs.get('aspect_ratio'),
                             self.__enemy_configs.get('shoot_percentage'),
-                            self.__enemy_configs.get('frame_rate'))
+                            self.__enemy_configs.get('frame_rate'),
+                            self.__enemy_configs.get('puntaje'))
             self.enemies.add(new_enemy)
     
+    def trampas(self):
+        for spike in self.spikes:
+            spike.draw(self.__main_screen)
+    
     def objetos(self):
-        for objeto in self.objects:
+        for objeto in self.objets:
             objeto.draw(self.__main_screen)
     
     def shoot_collisions(self):
         for fireball in self.player.sprite.fireball_group:
             hits = pygame.sprite.spritecollide(fireball, self.enemies, True)
             if hits:
+                self.player.sprite.new_score += sum(enemy.score for enemy in hits)
                 self.player.sprite.hit.play()
                 self.player.sprite.remove_fireball(fireball)  
             if not self.enemies and not self.game_win_sound:
@@ -119,13 +139,18 @@ class Stage:
                     self.player.sprite.restar_vida()
                     enemy.fireball_group.remove(fireball)
                     if self.player.sprite.lifes == 0 and not self.game_over_sound:
-                        self.player.sprite.death.play() 
                         self.game_over_sound = True
+                        self.player.sprite.death.play() 
                         
+    def spikes_collitions(self):
+        return pygame.sprite.spritecollide(self.player.sprite, self.spikes, False)
     
-    def objects_collitions(self):
-            pygame.sprite.spritecollide(self.player.sprite, self.objects, True)
-            
+    def enemy_body_collitions(self):
+        return pygame.sprite.spritecollide(self.player.sprite, self.enemies,False) 
+    
+    def objets_collitions(self):
+        for objeto in pygame.sprite.spritecollide(self.player.sprite, self.objets, True):
+            self.player.sprite.new_score += objeto.score
     
     def run(self, delta_ms, lista_eventos):
         self.__tiempo_transcurrido += delta_ms
@@ -133,14 +158,14 @@ class Stage:
             self.plataformas()
             self.enemigos()
             self.objetos()
-            self.objects_collitions()
-            self.objects.update(self.__main_screen, delta_ms)
-            # self.objects.draw(self.__main_screen)
+            self.objets_collitions()
+            self.trampas()
+            self.objets.update(self.__main_screen, delta_ms)
             self.enemies.update(self.__main_screen, delta_ms, self.__lista_plataformas)
-            # self.enemies.draw(self.__main_screen)
-            self.player.update(self.__main_screen, delta_ms, self.__lista_plataformas, lista_eventos)
+            self.player.update(self.__main_screen, delta_ms, self.__lista_plataformas, lista_eventos,
+                            self.spikes_collitions(), self.enemy_body_collitions())
             self.player.sprite.draw(self.__main_screen)
             self.shoot_collisions()
-            # print(f'player_y {self.player.sprite.rect.y}')
+            print(self.player.sprite.score)
         else:
             self.__tiempo_transcurrido = 0

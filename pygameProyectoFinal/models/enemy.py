@@ -6,7 +6,7 @@ from auxiliar.constantes import DEBUG
 import random
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, pos, constraint_w,constraint_h, walk_speed, gravity, aspect_ratio, fire_percentage, frame_rate):
+    def __init__(self, pos, constraint_w,constraint_h, walk_speed, gravity, aspect_ratio, fire_percentage, frame_rate, puntaje):
         super().__init__()
         # self.image = pygame.image.load(r'assets\graphics\Jump(32x32).png').convert_alpha()
         # self.image = pygame.transform.scale(self.image,(self.image.get_width() * aspect_ratio ,
@@ -28,6 +28,8 @@ class Enemy(pygame.sprite.Sprite):
         self.__rect = self.__actual_img_animation.get_rect(midbottom=pos)
         self.__ground_collition_rect = pygame.Rect(self.__rect.x + self.__rect.w//4 +6, (self.__rect.y + self.__rect.height), self.__rect.w//2 -6, 6)
         
+        #puntaje
+        self.__score = puntaje
         #hitbox
         self.__collition_rect = pygame.Rect(self.__rect.x + self.__rect.w//4 +6, (self.__rect.y + self.__rect.height), self.__rect.w//2 -6, 50)
         
@@ -61,6 +63,9 @@ class Enemy(pygame.sprite.Sprite):
     def rect(self):
         return self.__collition_rect
     
+    @property
+    def score(self):
+        return self.__score
     #animacion
     def __set_x_animations_preset(self, move_x, animation_list: list[pygame.surface.Surface], look_r: bool):
         self.__rect.x += move_x

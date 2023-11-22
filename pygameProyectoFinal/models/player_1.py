@@ -48,7 +48,7 @@ class Player(pygame.sprite.Sprite):
         self.__death_animation_counter = 0
         #sonido muerte
         self.__game_over_sound = pygame.mixer.Sound('assets/sounds/game_over.wav')
-        
+        self.__game_over = False
         #donde esta mirando
         self.__is_looking_right = True
         
@@ -81,6 +81,9 @@ class Player(pygame.sprite.Sprite):
         
         #test salto
         self.__is_jumping = False
+        
+        #puntaje
+        self.__puntaje = 0
     #propiedad del grupo disparo
     @property   
     def fireball_group(self):        
@@ -101,6 +104,13 @@ class Player(pygame.sprite.Sprite):
     def death(self):
         return self.__game_over_sound
     
+    @property
+    def score(self):
+        return self.__puntaje
+    @score.setter
+    def new_score(self, value):
+        self.__puntaje = value
+    
     def restar_vida(self):
         if self.__lifes > 0:
             self.__lifes -= 1
@@ -112,13 +122,13 @@ class Player(pygame.sprite.Sprite):
         self.__actual_animation = animation_list
         self.__is_looking_right = look_r
 
-    def __set_y_animations_preset(self,move_y,move_x, animation_list: list[pygame.surface.Surface], look_r: bool):
-        self.__rect.y += self.saltar()
-        self.__rect.x += move_x
-        self.__rect.x += self.__run_speed if self.__is_looking_right else -self.__run_speed
-        self.__actual_animation = self.__jump_r if self.__is_looking_right else self.__jump_l
-        self.__initial_frame = 0
-        self.__is_jumping = True 
+    # def __set_y_animations_preset(self,move_y,move_x, animation_list: list[pygame.surface.Surface], look_r: bool):
+    #     self.__rect.y += self.saltar()
+    #     self.__rect.x += move_x
+    #     self.__rect.x += self.__run_speed if self.__is_looking_right else -self.__run_speed
+    #     self.__actual_animation = self.__jump_r if self.__is_looking_right else self.__jump_l
+    #     self.__initial_frame = 0
+    #     self.__is_jumping = True 
 
     def do_animation(self, delta_ms):
         self.__player_animation_time += delta_ms   
@@ -144,16 +154,16 @@ class Player(pygame.sprite.Sprite):
     
     def get_inputs(self, lista_eventos, lista_plataformas):
         
-        for event in lista_eventos:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and not self.__is_jumping:
-                    print("estoyt en el keydown")
-                    self.__is_jumping = True
-                    self.__jump_sound.play()
-                    
-        keys = pygame.key.get_pressed()
-        
         if self.__lifes > 0:    
+            
+            for event in lista_eventos:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE and not self.__is_jumping:
+                        print("estoyt en el keydown")
+                        self.__is_jumping = True
+                        self.__jump_sound.play()
+                        
+            keys = pygame.key.get_pressed()
             if keys[pygame.K_a]:
                 self.__is_right = False
                 self.walk(self.__is_right)
@@ -170,8 +180,9 @@ class Player(pygame.sprite.Sprite):
 
         else:
             if not self.__death_animation_times: 
-                self.__death_animation_times = True
                 self.is_dead()
+                self.__death_animation_times = True
+
 
             else:
                 if self.__death_animation_times and self.__initial_frame == 7:
@@ -183,6 +194,30 @@ class Player(pygame.sprite.Sprite):
             return True
         return False
 
+    def check_traps(self, trampas):
+        if trampas:
+            if self.__is_looking_right:
+                self.__rect.x -= 25
+            else:
+                self.__rect.x += 25
+            self.__rect.y -= 12
+                
+            self.__damage_sound.play()
+            self.restar_vida()
+            
+            if self.__lifes == 0 and not self.__game_over:
+                self.__game_over_sound.play()
+                self.__game_over = True
+    
+    def check_body_to_body_collitions(self,cuerpo_a_cuerpo):
+        if cuerpo_a_cuerpo and self.__lifes > 0:
+            self.restar_vida()
+            self.__damage_sound.play()
+            if self.__is_looking_right:
+                self.__rect.x -= 70
+            else:
+                self.__rect.x += 70
+            self.__rect.y -= 5
     def saltar(self, lista_plataformas):
         
         if self.__is_jumping:
@@ -225,17 +260,17 @@ class Player(pygame.sprite.Sprite):
             self.__rect.x += -self.__run_speed
 
     def constraint(self):
-        if self.__rect.left <= 0:
-            self.__rect.left = 0
-        if self.__rect.right >= self.__max_constraint_w:
-            self.__rect.right = self.__max_constraint_w
+        if self.__rect.left  <= 0 -16:
+            self.__rect.left = 0 -16
+        if self.__rect.right >= self.__max_constraint_w+16:
+            self.__rect.right = self.__max_constraint_w+16
 
         if self.__rect.top <= 0:
             self.__rect.top = 0
         if self.__rect.bottom >= self.__max_constraint_h+1:
             self.__rect.bottom = self.__max_constraint_h+1
     
-    def gravedad(self, lista_plataformas, delta_ms):
+    def gravedad(self, lista_plataformas):
         if not self.on_platform(lista_plataformas):
             self.__rect.y += self.__gravity
 
@@ -276,14 +311,15 @@ class Player(pygame.sprite.Sprite):
 
         # screen.blit(self.image, self.__rect)
 
-    def update(self, screen: pygame.surface.Surface, delta_ms, lista_plataformas, lista_eventos):
+    def update(self, screen: pygame.surface.Surface, delta_ms, lista_plataformas, lista_eventos, trampas, cuerpo_a_cuerpo):
         self.get_inputs(lista_eventos, lista_plataformas)
         self.constraint()
         self.do_animation(delta_ms)
-        self.gravedad(lista_plataformas, delta_ms)
+        self.gravedad(lista_plataformas)
         self.fire_cooldown()
         self.saltar(lista_plataformas)
-        
-
+        self.check_traps(trampas)
+        self.check_body_to_body_collitions(cuerpo_a_cuerpo)
+        print(f"lifes {self.__lifes}")
         self.__fireball_group.draw(screen)
         self.__fireball_group.update()

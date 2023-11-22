@@ -1,10 +1,10 @@
 {
     "stage_1": {
         "stage" : {
-            "stage_background": "assets/graphics/cemetery_hd.jpg",
+            "stage_background": "./assets/graphics/cemetery_hd.jpg",
             "stage_music": "assets/sounds/halloween.wav",
             "stage_win": "assets/sounds/game_win.mp3",
-            "max_enemies_amount": 0,
+            "max_enemies_amount": 5,
             "coords_enemies": [
                 {
                     "coord_x": 50,
@@ -18,7 +18,8 @@
                     "coord_x": 400,
                     "coord_y": 20
                 }
-            ]
+            ],
+            "timer": 100 
         },
         "player": {
             "player_img": "image",
@@ -39,13 +40,21 @@
             "enemy_min_speed": 1,
             "shoot_percentage": 5,
             "frame_rate": 100,
-            "gravity": 5
+            "gravity": 5,
+            "puntaje": 500
         },
         "objetos":{
             "apple": "assets/graphics/Apple.png",
             
-            "aspect_ratio" : 2,
-            "frame_rate" : 100,
+            "aspect_ratio": 2,
+            "frame_rate": 100,
+            "pos_x": 50,
+            "pos_y": 50,
+            "puntaje": 100
+        },
+        "trampas":{
+            "spikes": "assets/graphics/spike.png",
+            "aspect_ratio": 2,
             "pos_x": 50,
             "pos_y": 50
         }
