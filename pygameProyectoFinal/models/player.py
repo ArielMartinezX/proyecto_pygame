@@ -34,6 +34,19 @@ class Player(pygame.sprite.Sprite):
         
         #donde esta mirando
         self.__is_right = True
+        
+    # def __set_x_animations_preset(self, move_x, animation_list: list[pygame.surface.Surface], look_r: bool):
+    #     self.rect.x = move_x
+    #     self.__actual_animation = animation_list
+    #     self.__is_looking_right = look_r
+        
+    
+    # def __set_y_animations_preset(self,move_y, animation_list: list[pygame.surface.Surface], look_r: bool):
+    #     self.rect.y = -self.__jump
+    #     self.rect.x = self.__speed_run if self.__is_looking_right else -self.__speed_run
+    #     self.__actual_animation = self.__jump_r if self.__is_looking_right else self.__jump_l
+    #     self.__initial_frame = 0
+    #     self.__is_jumping = True 
 
     def update_hitbox(self):
         self.__hitbox.topleft = (self.rect.x, self.rect.y)
