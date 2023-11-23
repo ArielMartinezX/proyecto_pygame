@@ -1,0 +1,106 @@
+{
+    "stage_1": {
+        "stage" : {
+            "stage_background": "./assets/graphics/cemetery_hd.jpg",
+            "stage_music": "assets/sounds/halloween.wav",
+            "stage_win": "assets/sounds/game_win.mp3",
+            "max_enemies_amount": 3,
+            "lifes_amount" : 3,
+            "timer": 100 
+        },
+        "player": {
+            "player_img": "image",
+            "jump_power": 5,
+            "gravity": 5,
+            "walk_speed": 2,
+            "run_speed": 2,
+            "aspect_ratio" : 2,
+            "lifes": 3,
+            "frame_rate": 200,
+            "shoot_frames": 1000,
+            "fire_cooldown" : 600
+        },
+        "enemy":{
+            "enemy_img": "assets/graphics/Jump(32x32).png",
+            "aspect_ratio" : 2,
+            "enemy_max_speed": 5,
+            "enemy_min_speed": 1,
+            "shoot_percentage": 5,
+            "frame_rate": 100,
+            "gravity": 5,
+            "puntaje": 500
+        },
+        "objetos":{
+            "apple": "assets/graphics/Apple.png",
+            "aspect_ratio": 2,
+            "frame_rate": 100,
+            "pos_x": 50,
+            "pos_y": 50,
+            "puntaje": 100
+        },
+        "vidas":{
+            "corazon": "assets/graphics/Apple.png",
+            "aspect_ratio": 2,
+            "frame_rate": 100,
+            "life_value":1
+        },
+        "trampas":{
+            "spikes": "assets/graphics/spike.png",
+            "aspect_ratio": 2,
+            "pos_x": 50,
+            "pos_y": 50
+        }
+    },
+    "stage_2": {
+        "stage" : {
+            "stage_background": "./assets/graphics/cemetery_hd.jpg",
+            "stage_music": "assets/sounds/halloween.wav",
+            "stage_win": "assets/sounds/game_win.mp3",
+            "max_enemies_amount": 5,
+            "lifes_amount" : 3,
+            "timer": 100 
+        },
+        "player": {
+            "player_img": "image",
+            "jump_power": 5,
+            "gravity": 5,
+            "walk_speed": 2,
+            "run_speed": 2,
+            "aspect_ratio" : 2,
+            "lifes": 3,
+            "frame_rate": 200,
+            "shoot_frames": 1000,
+            "fire_cooldown" : 600
+        },
+        "enemy":{
+            "enemy_img": "assets/graphics/Jump(32x32).png",
+            "aspect_ratio" : 2,
+            "enemy_max_speed": 5,
+            "enemy_min_speed": 1,
+            "shoot_percentage": 5,
+            "frame_rate": 100,
+            "gravity": 5,
+            "puntaje": 500
+        },
+        "objetos":{
+            "apple": "assets/graphics/Apple.png",
+            "aspect_ratio": 2,
+            "frame_rate": 100,
+            "pos_x": 50,
+            "pos_y": 50,
+            "puntaje": 100
+        },
+        "vidas":{
+            "corazon": "assets/graphics/Apple.png",
+            "aspect_ratio": 2,
+            "frame_rate": 100,
+            "life_value":1
+        },
+        "trampas":{
+            "spikes": "assets/graphics/spike.png",
+            "aspect_ratio": 2,
+            "pos_x": 50,
+            "pos_y": 50
+        }
+    }
+}
