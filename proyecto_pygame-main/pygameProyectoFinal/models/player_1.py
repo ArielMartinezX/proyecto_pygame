@@ -254,13 +254,6 @@ class Player(pygame.sprite.Sprite):
         else:
             self.__set_x_animations_preset(-self.__walk_speed, self.__walk_l, look_r=look_right)
 
-    def run(self, look_right=True):
-        self.__frame_rate = self.__frame_rate_run
-        if look_right:
-            self.__rect.x += self.__run_speed
-        else:
-            self.__rect.x += -self.__run_speed
-
     def constraint(self):
         if self.__rect.left  <= 0 -16:
             self.__rect.left = 0 -16

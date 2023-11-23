@@ -26,9 +26,9 @@ class Game:
         background = pygame.image.load(back)
         background = pygame.transform.scale(background, (SCR_WIDTH, SCR_HEIGHT))
         # Reproducir la música en bucle (loop)
-        pygame.mixer.music.set_volume(0.05)
-        pygame.mixer.music.load(background_music)
-        pygame.mixer.music.play(-1)
+        # pygame.mixer.music.set_volume(0.05)
+        # pygame.mixer.music.load(background_music)
+        # pygame.mixer.music.play(-1)
         
         while True:
             lista_eventos = []
