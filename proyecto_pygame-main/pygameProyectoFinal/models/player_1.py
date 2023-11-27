@@ -4,64 +4,63 @@ from models.fireball import Fireball
 from auxiliar.constantes import *
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, constraint_w,constraint_h, walk_speed,run_speed, jump_power, gravity, aspect_ratio, jump_limit, frame_rate, lifes, fire_cooldown):
+    def __init__(self, pos, constraint_w,constraint_h, walk_speed,run_speed, jump_power, gravity, aspect_ratio, frame_rate, lifes, fire_cooldown,
+                idle_path,idle_cols,idle_rows, walk_path, walk_cols, walk_rows, jump_path, jump_cols, jump_rows, attack_path, attack_cols, attack_rows,
+                death_path, death_cols, death_rows):
         super().__init__()
 
-        self.__iddle_r = sf.get_surface_from_spritesheet(r'assets\graphics\Owlet_Monster\Owlet_Monster_Idle_4.png', 4, 1)
-        self.__iddle_l = sf.get_surface_from_spritesheet(r'assets\graphics\Owlet_Monster\Owlet_Monster_Idle_4.png', 4, 1, flip=True)
+        self.__iddle_r = sf.get_surface_from_spritesheet(idle_path, idle_cols, idle_rows)
+        self.__iddle_l = sf.get_surface_from_spritesheet(idle_path, idle_cols, idle_rows, flip=True)
         self.__iddle_r = [pygame.transform.scale(image,(image.get_width() * aspect_ratio, image.get_height() * aspect_ratio)) for image in self.__iddle_r]
         self.__iddle_l = [pygame.transform.scale(image,(image.get_width() * aspect_ratio, image.get_height() * aspect_ratio)) for image in self.__iddle_l]
-        self.__walk_r = sf.get_surface_from_spritesheet(r'assets\graphics\Owlet_Monster\Owlet_Monster_Walk_6.png',6,1)
-        self.__walk_l = sf.get_surface_from_spritesheet(r'assets\graphics\Owlet_Monster\Owlet_Monster_Walk_6.png',6,1,flip=True)
+        self.__walk_r = sf.get_surface_from_spritesheet(walk_path,walk_cols,walk_rows)
+        self.__walk_l = sf.get_surface_from_spritesheet(walk_path,walk_cols,walk_rows,flip=True)
         self.__walk_r = [pygame.transform.scale(image,(image.get_width() * aspect_ratio, image.get_height() * aspect_ratio)) for image in self.__walk_r]
         self.__walk_l = [pygame.transform.scale(image,(image.get_width() * aspect_ratio, image.get_height() * aspect_ratio)) for image in self.__walk_l]
-        self.__jump_r = sf.get_surface_from_spritesheet(r'assets/graphics/Owlet_Monster/Owlet_Monster_Jump_8.png', 8,1)
-        self.__jump_l = sf.get_surface_from_spritesheet(r'assets/graphics/Owlet_Monster/Owlet_Monster_Jump_8.png', 8,1,flip=True)
+        self.__jump_r = sf.get_surface_from_spritesheet(jump_path,jump_cols,jump_rows)
+        self.__jump_l = sf.get_surface_from_spritesheet(jump_path,jump_cols,jump_rows,flip=True)
         self.__jump_r = [pygame.transform.scale(image,(image.get_width() * aspect_ratio, image.get_height() * aspect_ratio)) for image in self.__jump_r]
         self.__jump_l = [pygame.transform.scale(image,(image.get_width() * aspect_ratio, image.get_height() * aspect_ratio)) for image in self.__jump_l]
-        self.__attack_r = sf.get_surface_from_spritesheet(r'assets\graphics\Owlet_Monster\Owlet_Monster_Attack2_6.png', 6,1)
-        self.__attack_l = sf.get_surface_from_spritesheet(r'assets\graphics\Owlet_Monster\Owlet_Monster_Attack2_6.png', 6,1,flip=True)
+        self.__attack_r = sf.get_surface_from_spritesheet(attack_path, attack_cols, attack_rows)
+        self.__attack_l = sf.get_surface_from_spritesheet(attack_path, attack_cols, attack_rows,flip=True)
         self.__attack_r = [pygame.transform.scale(image,(image.get_width() * aspect_ratio, image.get_height() * aspect_ratio)) for image in self.__attack_r]
         self.__attack_l = [pygame.transform.scale(image,(image.get_width() * aspect_ratio, image.get_height() * aspect_ratio)) for image in self.__attack_l]
-        self.__death_r = sf.get_surface_from_spritesheet(r'assets\graphics\Owlet_Monster\Owlet_Monster_Death_8.png', 8,1)
-        self.__death_l = sf.get_surface_from_spritesheet(r'assets\graphics\Owlet_Monster\Owlet_Monster_Death_8.png', 8,1, flip=True)
+        self.__death_r = sf.get_surface_from_spritesheet(death_path, death_cols, death_rows)
+        self.__death_l = sf.get_surface_from_spritesheet(death_path, death_cols, death_rows, flip=True)
         self.__death_r = [pygame.transform.scale(image,(image.get_width() * aspect_ratio, image.get_height() * aspect_ratio)) for image in self.__death_r]
         self.__death_l = [pygame.transform.scale(image,(image.get_width() * aspect_ratio, image.get_height() * aspect_ratio)) for image in self.__death_l]
         
-        
         self.__frame_rate = frame_rate
-        self.__frame_rate_stay = 200
-        self.__frame_rate_walk = 200
-        self.__frame_rate_run = 50
-        self.__frame_rate_shoot = 500
-        self.__frame_rate_death = 500
+        self.__frame_rate_stay = 200 #PASAR AL JSON
+        self.__frame_rate_walk = 200 #PASAR AL JSON
+        self.__frame_rate_shoot = 500 #PASAR AL JSON
+        self.__frame_rate_death = 500 #PASAR AL JSON
         self.__player_animation_time = 0
         self.__initial_frame = 0
         self.__actual_animation = self.__iddle_r
         self.__actual_img_animation = self.__actual_animation[self.__initial_frame]
         self.__rect = self.__actual_img_animation.get_rect(midbottom=pos)
+        #vidas
         self.__lifes = lifes
-        
+        self.__life_sound = pygame.mixer.Sound('assets/sounds/life_sound.mp3') #PASAR AL JSON
         #animacion muerte
         self.__death_animation_times = False
-        self.__death_animation_counter = 0
         #sonido muerte
-        self.__game_over_sound = pygame.mixer.Sound('assets/sounds/game_over.wav')
+        self.__game_over_sound = pygame.mixer.Sound('assets/sounds/game_over.wav') #PASAR AL JSON
         self.__game_over = False
         #donde esta mirando
         self.__is_looking_right = True
         
         #disparos
         self.__fireball_group = pygame.sprite.Group()
-        self.__shoot_rate = 300
         self.__fire_cooldown = fire_cooldown
         self.__fire_ready = True
         self.__shoot_time = 0
-        self.__shoot_sound = pygame.mixer.Sound('assets/sounds/fire_shoot.mp3')
-        self.__damage_sound = pygame.mixer.Sound('assets/sounds/hit_sound.wav')
+        self.__shoot_sound = pygame.mixer.Sound('assets/sounds/fire_shoot.mp3') #PASAR AL JSON
+        self.__damage_sound = pygame.mixer.Sound('assets/sounds/hit_sound.wav') #PASAR AL JSON
         # #HITBOX
-        self.__ground_collition_rect = pygame.Rect(self.__rect.x + self.__rect.w//4 +6, (self.__rect.y + self.__rect.height), self.__rect.w//2 -6, 6)
-        self.__collition_rect = pygame.Rect(self.__rect.x + self.__rect.w//4 +6, (self.__rect.y + self.__rect.height), self.__rect.w//2 -6, 50)
+        self.__ground_collition_rect = pygame.Rect(self.__rect.x + self.__rect.w//4 + 6, (self.__rect.y + self.__rect.height), self.__rect.w//2 - 6, 6)
+        self.__collition_rect = pygame.Rect(self.__rect.x + self.__rect.w//4 + 6, (self.__rect.y + self.__rect.height), self.__rect.w//2 - 6, 50)
         
         #Atributos de movimiento
         self.__walk_speed = walk_speed
@@ -73,8 +72,9 @@ class Player(pygame.sprite.Sprite):
         self.__jump_power = jump_power
         self.__gravity = gravity
         self.__salto = jump_power
-        self.__jump_sound = pygame.mixer.Sound('assets/sounds/jump_sound.mp3')
-        self.__jump_velocity = jump_power
+        self.__jump_sound = pygame.mixer.Sound('assets/sounds/jump_sound.mp3') #PASAR AL JSON
+        self.__total_jump_movents = 21
+        
         #plataformas
         self.__retorno = False
         
@@ -102,7 +102,9 @@ class Player(pygame.sprite.Sprite):
     @property
     def death(self):
         return self.__game_over_sound
-    
+    @property
+    def life_up(self):
+        return self.__life_sound
     @property
     def score(self):
         return self.__puntaje
@@ -135,7 +137,15 @@ class Player(pygame.sprite.Sprite):
     #     self.__actual_animation = self.__jump_r if self.__is_looking_right else self.__jump_l
     #     self.__initial_frame = 0
     #     self.__is_jumping = True 
-
+    
+    def __set_y_animations_preset(self,move_y, frame: int):
+        self.__rect.y -= move_y
+        #self.__rect.x += move_x
+        #self.__rect.x += self.__run_speed if self.__is_looking_right else -self.__run_speed
+        self.__actual_animation = [self.__jump_r[frame]] if self.__is_looking_right else [self.__jump_l[frame]]
+        self.__initial_frame = 0
+        self.__is_jumping = True 
+    
     def do_animation(self, delta_ms):
         self.__player_animation_time += delta_ms   
         if self.__player_animation_time >= self.__frame_rate:
@@ -148,7 +158,7 @@ class Player(pygame.sprite.Sprite):
     
     def on_platform(self, lista_plataformas):
         self.__retorno = False
-        if self.__ground_collition_rect.y >= 500: # aplica gravedad. 
+        if self.__ground_collition_rect.y >= GROUND: # aplica gravedad. 
             self.__retorno = True
             return self.__retorno
         else:
@@ -158,13 +168,13 @@ class Player(pygame.sprite.Sprite):
                     break
         return self.__retorno
     
-    def get_inputs(self, lista_eventos):
+    def get_inputs(self, lista_eventos, lista_plataformas):
         
         if self.__lifes > 0:    
             
             for event in lista_eventos:
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE and not self.__is_jumping:
+                    if event.key == pygame.K_SPACE and not self.__is_jumping and self.on_platform(lista_plataformas):
                         self.__is_jumping = True
                         self.__jump_sound.play()
                         
@@ -182,7 +192,6 @@ class Player(pygame.sprite.Sprite):
                 self.__shoot_sound.play()
                 self.__fire_ready = False
                 self.__shoot_time = pygame.time.get_ticks()
-
         else:
             if not self.__death_animation_times: 
                 self.is_dead()
@@ -201,10 +210,10 @@ class Player(pygame.sprite.Sprite):
     def check_traps(self, trampas):
         if trampas:
             if self.__is_looking_right:
-                self.__rect.x -= 25
+                self.__rect.x -= 25 #PASAR AL JSON
             else:
-                self.__rect.x += 25
-            self.__rect.y -= 12
+                self.__rect.x += 25 #PASAR AL JSON
+            self.__rect.y -= 12 #PASAR AL JSON
                 
             self.__damage_sound.play()
             self.restar_vida()
@@ -218,24 +227,57 @@ class Player(pygame.sprite.Sprite):
             self.restar_vida()
             self.__damage_sound.play()
             if self.__is_looking_right:
-                self.__rect.x -= 70
+                self.__rect.x -= 70 #PASAR AL JSON
             else:
-                self.__rect.x += 70
-            self.__rect.y -= 5
+                self.__rect.x += 70 #PASAR AL JSON
+            self.__rect.y -= 5 #PASAR AL JSON
+            
+    # def saltar(self, lista_plataformas):
+    #     if self.__is_jumping:
+    #         if self.__salto >= -self.__jump_power:
+    #             self.__rect.y -= self.__salto + 10
+    #             keys = pygame.key.get_pressed()
+    #             if keys[pygame.K_a]:
+    #                 self.__rect.x -= self.__run_speed
+    #             if keys[pygame.K_d]:
+    #                 self.__rect.x += self.__run_speed
+    #             self.__salto -= 0.5
+    #         elif self.on_platform(lista_plataformas):
+    #             self.__is_jumping = False
+    #             self.__salto = self.__jump_power
+                
     def saltar(self, lista_plataformas):
-        
         if self.__is_jumping:
             if self.__salto >= -self.__jump_power:
-                self.__rect.y -= self.__salto + 10
+                self.__set_y_animations_preset( self.__salto + 10, self.handle_jump_animation())
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_a]:
                     self.__rect.x -= self.__run_speed
                 if keys[pygame.K_d]:
                     self.__rect.x += self.__run_speed
                 self.__salto -= 0.5
+                self.__total_jump_movents -=1
             elif self.on_platform(lista_plataformas):
                 self.__is_jumping = False
-                self.__salto = self.__jump_power
+                self.__total_jump_movents = 21
+                self.__salto = self.__jump_power  
+                
+    def handle_jump_animation(self):
+        if self.__total_jump_movents == 21: 
+            return 0
+        if self.__total_jump_movents <= 20 and self.__total_jump_movents >= 19:
+            return 1
+        if self.__total_jump_movents <= 18 and self.__total_jump_movents >= 17:
+            return 2
+        if self.__total_jump_movents <= 18 and self.__total_jump_movents >= 11:
+            return 3
+        if self.__total_jump_movents <= 10 and self.__total_jump_movents >= 7:
+            return 4
+        if self.__total_jump_movents <= 6 and self.__total_jump_movents >= 3:
+            return 5
+        if self.__total_jump_movents <= 2 and self.__total_jump_movents >= 1:
+            return 6
+        return 7                
 
     def is_dead(self):
         self.__frame_rate = self.__frame_rate_death
@@ -253,6 +295,7 @@ class Player(pygame.sprite.Sprite):
             self.__set_x_animations_preset(self.__walk_speed, self.__walk_r, look_r=look_right)
         else:
             self.__set_x_animations_preset(-self.__walk_speed, self.__walk_l, look_r=look_right)
+
 
     def constraint(self):
         if self.__rect.left  <= 0 -16:
@@ -301,7 +344,7 @@ class Player(pygame.sprite.Sprite):
         self.__collition_rect.midbottom = self.__rect.midbottom
 
     def update(self, screen: pygame.surface.Surface, delta_ms, lista_plataformas, lista_eventos, trampas, cuerpo_a_cuerpo):
-        self.get_inputs(lista_eventos)
+        self.get_inputs(lista_eventos, lista_plataformas)
         self.constraint()
         self.do_animation(delta_ms)
         self.gravedad(lista_plataformas)
@@ -309,7 +352,5 @@ class Player(pygame.sprite.Sprite):
         self.saltar(lista_plataformas)
         self.check_traps(trampas)
         self.check_body_to_body_collitions(cuerpo_a_cuerpo)
-        print(f"vidas {self.__lifes}")
-        #print(f"lifes {self.__lifes}")
         self.__fireball_group.draw(screen)
         self.__fireball_group.update()

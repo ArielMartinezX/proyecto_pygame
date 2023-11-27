@@ -2,21 +2,19 @@ import pygame
 import random
 from models.fireball import Fireball
 from auxiliar.utils import SurfaceManager as sf
-from auxiliar.constantes import DEBUG
+from auxiliar.constantes import DEBUG,open_configs, GROUND
 import random
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, pos, constraint_w,constraint_h, walk_speed, gravity, aspect_ratio, fire_percentage, frame_rate, puntaje):
+    def __init__(self, pos, constraint_w,constraint_h, walk_speed, gravity, aspect_ratio, fire_percentage, frame_rate, puntaje,
+                walk_path, walk_cols, walk_rows, fall_path, fall_cols, fall_rows):
         super().__init__()
-        # self.image = pygame.image.load(r'assets\graphics\Jump(32x32).png').convert_alpha()
-        # self.image = pygame.transform.scale(self.image,(self.image.get_width() * aspect_ratio ,
-        #                 self.image.get_height() * aspect_ratio))
-        self.__walk_r = sf.get_surface_from_spritesheet('assets\graphics\walk.png', 12,1)
-        self.__walk_l = sf.get_surface_from_spritesheet('assets\graphics\walk.png', 12,1,flip=True)
+        self.__walk_r = sf.get_surface_from_spritesheet(walk_path, walk_cols, walk_rows)
+        self.__walk_l = sf.get_surface_from_spritesheet(walk_path, walk_cols, walk_rows,flip=True)
         self.__walk_r = [ pygame.transform.scale(image, (image.get_width() * aspect_ratio, image.get_height() * aspect_ratio)) for image in self.__walk_r]
         self.__walk_l = [ pygame.transform.scale(image, (image.get_width() * aspect_ratio, image.get_height() * aspect_ratio)) for image in self.__walk_l]
-        self.__fall_r = sf.get_surface_from_spritesheet(r'assets\graphics\fall.png', 1,1)
-        self.__fall_l = sf.get_surface_from_spritesheet(r'assets\graphics\fall.png', 1,1,flip=True)
+        self.__fall_r = sf.get_surface_from_spritesheet(fall_path, fall_cols, fall_rows)
+        self.__fall_l = sf.get_surface_from_spritesheet(fall_path, fall_cols, fall_rows,flip=True)
         self.__fall_r = [ pygame.transform.scale(image, (image.get_width() * aspect_ratio, image.get_height() * aspect_ratio)) for image in self.__fall_r]
         self.__fall_l = [ pygame.transform.scale(image, (image.get_width() * aspect_ratio, image.get_height() * aspect_ratio)) for image in self.__fall_l]
         #animacion
@@ -47,9 +45,8 @@ class Enemy(pygame.sprite.Sprite):
         self.__fireball_group = pygame.sprite.Group()
         self.__fire_probability = fire_percentage
         self.__fire_random = 0
-        self.__fire_clock = 0
         self.__fire_counting_time = 0
-        self.__fire_delay = 2000
+        self.__fire_delay = 2000  #PASAR AL JSON
 
         #plataforma actual y nuevo constraint
         self.__current_platform = None
@@ -98,7 +95,7 @@ class Enemy(pygame.sprite.Sprite):
     
     def on_platform(self, lista_plataformas):
         self.__retorno = False
-        if self.__ground_collition_rect.y >= 500: # aplica gravedad. 
+        if self.__ground_collition_rect.y >= GROUND: # aplica gravedad. 
             self.__retorno = True
             return self.__retorno
         else:
@@ -133,7 +130,7 @@ class Enemy(pygame.sprite.Sprite):
                 self.__set_y_animations_preset(self.__gravity, self.__fall_l)
 
     def create_fireball(self, delta_ms):
-        self.__fire_random = random.randint(0,6)
+        self.__fire_random = random.randint(0,6) #PASAR AL JSON
         self.__fire_counting_time += delta_ms
         if self.__fire_random > self.__fire_probability and self.__fire_counting_time > self.__fire_delay:
             self.__fire_counting_time = 0
@@ -169,7 +166,6 @@ class Enemy(pygame.sprite.Sprite):
     
     def update(self, screen: pygame.surface.Surface, delta_ms, lista_plataformas):
         self.do_animation(delta_ms)
-        self.__last_fire_time = delta_ms
         new_fireball = self.create_fireball(delta_ms)
         if new_fireball:
             self.__fireball_group.add(new_fireball)

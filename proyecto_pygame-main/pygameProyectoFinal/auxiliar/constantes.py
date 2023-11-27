@@ -2,6 +2,8 @@ import json
 
 SCR_HEIGHT = 600
 SCR_WIDTH = 800
+GROUND = 500
+SPAWN_Y = 50
 CONFIG_FILE_PATH = './configs/config.json'
 FPS = 60
 DEBUG = False

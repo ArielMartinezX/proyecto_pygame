@@ -3,12 +3,12 @@ from auxiliar.utils import SurfaceManager as sf
 from auxiliar.constantes import DEBUG
 
 class Objetos(pygame.sprite.Sprite):
-    def __init__(self, x,y, aspect_ratio, frame_rate, puntaje):
+    def __init__(self, x,y, aspect_ratio, frame_rate, puntaje, item_img_path,
+            item_cols, item_rows):
         super().__init__()
 
-        self.__image = sf.get_surface_from_spritesheet(r"assets\graphics\Apple.png", 17,1)
+        self.__image = sf.get_surface_from_spritesheet(item_img_path, item_cols, item_rows)
         self.__image = [pygame.transform.scale(image,(image.get_width() * aspect_ratio, image.get_height() * aspect_ratio)) for image in self.__image]
-        # self.__rect = self.__image.get_rect()
         #atributos animacion
         self.__frame_rate = frame_rate
         self.__player_animation_time = 0

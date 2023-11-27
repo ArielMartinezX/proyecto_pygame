@@ -7,8 +7,7 @@ from auxiliar.constantes import DEBUG
 class Trampas(pygame.sprite.Sprite):
     def __init__(self, x,y):
         super().__init__()
-
-        self.__image = pygame.image.load("assets/graphics/spike.png")
+        self.__image = pygame.image.load("assets/graphics/spike.png") #PASAR AL JSON
         self.__rect = self.__image.get_rect(midbottom=(x,y))
         self.__ground_collition_rect = pygame.Rect(self.__rect.x, self.__rect.y+6, self.__rect.w-1 , self.__rect.h/2)
 

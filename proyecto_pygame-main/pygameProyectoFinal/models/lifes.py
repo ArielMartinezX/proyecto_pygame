@@ -6,7 +6,7 @@ class Life(pygame.sprite.Sprite):
     def __init__(self, x,y, aspect_ratio,life_increase):
         super().__init__()
 
-        self.__image = pygame.image.load("assets\graphics\Sprite_heart.png")
+        self.__image = pygame.image.load("assets\graphics\Sprite_heart.png") #PASAR AL JSON
         self.__image = pygame.transform.scale(self.__image, (self.__image.get_width() * aspect_ratio,
                         self.__image.get_height() * aspect_ratio))
         self.__rect = self.__image.get_rect(midbottom=(x,y))
